@@ -7,6 +7,6 @@ It has randon levels with raising dificulty. As an exercise, it was writen using
 
 Compiles on POSIX platforms (Linux, BSD, IOS) with:
     
-    ```g++ -O2 -o cxmaze cxmaze.cpp -lncurses```
+    g++ -O2 -o cxmaze cxmaze.cpp -lncurses
     
 ![](screenshot.png)
