@@ -11,7 +11,7 @@ class Maze {
 public:
     using size_type = unsigned long;
     
-    Maze(const size_type x, const size_type y) //constructor
+    explicit Maze(const size_type x, const size_type y) //constructor
         : width{x}, height{y}
     {   
         //allocate and initialize
@@ -39,7 +39,7 @@ public:
         maze[(height - 1) * width + (width - 2)] = 0;
     }      
     
-    ~Maze() //destructor
+    ~Maze() noexcept //destructor
     {
         delete[] maze;
     }
