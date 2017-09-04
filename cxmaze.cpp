@@ -105,7 +105,7 @@ class Player {
 public:
     using size_type = long;
     
-    Player(const size_type xx, const size_type yy) //constructor
+    explicit Player(const size_type xx, const size_type yy) //constructor
         : x{xx}, y{yy}, counter{0} {}
         
     Player() : x{1}, y{0}, counter{0} {}  //default constructor
@@ -128,12 +128,12 @@ public:
     
     void mov(const Maze& m, const size_type xx, const size_type yy)
     {
-        auto mz = m.getmaze();
+        static auto mz = m.getmaze();
         
         if (x + xx <= 0 || x + xx >= m.getwidth() || 
             y + yy <= 0 || y + yy >= m.getheight()) return; // Check bounds
             
-        if (mz[(y+yy)*m.getwidth()+(x+xx)]==1) return;  // Check collisions
+        if (mz[ (y+yy)*m.getwidth()+(x+xx) ]==1) return;  // Check collisions
         
         x += xx; y += yy; // Change current position
         ++counter;
@@ -168,7 +168,7 @@ public:
         init_pair(3, COLOR_WHITE, COLOR_BLACK);
     }
     
-    ~Curses_window()
+    ~Curses_window() noexcept
     {
         endwin();     // destructor restore console at exit
     }
@@ -209,6 +209,9 @@ int main()
                 case 'd': case KEY_RIGHT:
                     p.mov(m, 1, 0);
                     break;
+                case 'q': case KEY_EXIT: case 27:
+                    exit_flag = true;
+                    break;
                 default:
                     refresh();
             }
@@ -223,10 +226,6 @@ int main()
                 attroff(COLOR_PAIR(Color::white));
                 break;
             }
-            if (ch == 'q' || ch == KEY_EXIT || ch == 27){
-                exit_flag = true;
-                break; // Press Q or ESC or Ctrl+C to exit
-            }
         }
         int row=0; int col=0;
         getmaxyx(stdscr, row, col);
@@ -236,5 +235,6 @@ int main()
             break;
         }
     }
+    
     return 0;
 }
