@@ -39,6 +39,11 @@ public:
         maze[(height - 1) * width + (width - 2)] = 0;
     }      
     
+    Maze(const Maze&)=delete;  //disable copy constructor
+    Maze& operator=(const Maze&)=delete; //disable copy assignment
+    Maze(Maze&&)=delete; //disable move constructor
+    Maze& operator=(Maze&&)=delete; //disable move assignment
+    
     ~Maze() noexcept //destructor
     {
         delete[] maze;
@@ -126,6 +131,17 @@ public:
         attroff(COLOR_PAIR(color));
     }
     
+    void ShowWin(const Color& color)
+    {
+        move(0, 0);
+        clear();
+        refresh();
+        attron(COLOR_PAIR(color));
+        printw("You WIN!!!!! Total moves: %i", counter);
+        getch();
+        attroff(COLOR_PAIR(color));
+    }
+    
     void mov(const Maze& m, const size_type xx, const size_type yy)
     {
         static auto mz = m.getmaze();
@@ -139,9 +155,9 @@ public:
         ++counter;
     }
     
-    size_type getpos_x() const { return x; }
-    size_type getpos_y() const { return y; }
-    size_type getcounter() const { return counter; }
+    const size_type getpos_x() const { return x; }
+    const size_type getpos_y() const { return y; }
+    const size_type getcounter() const { return counter; }
     
 private:
     size_type x;
@@ -166,6 +182,7 @@ public:
         init_pair(1, COLOR_RED, COLOR_BLACK);    // must match enum class Color
         init_pair(2, COLOR_GREEN, COLOR_BLACK);
         init_pair(3, COLOR_WHITE, COLOR_BLACK);
+        getmaxyx(stdscr, y, x);
     }
     
     ~Curses_window() noexcept
@@ -173,66 +190,57 @@ public:
         endwin();     // destructor restore console at exit
     }
     
+    const int getx() const { return x; }
+    const int gety() const { return y; }
+private:
+    int x;
+    int y;  
 };
 
 int main()
 {
     Curses_window my_window;
     
-    // Start sizes
-    int x_initial = 39;
-    int y_initial = 23;
-    bool exit_flag = false;
+    // Start sizes and increase conform screen
+    int width = 23, height = 15;
+    while (width < (my_window.getx()/2)-11) width += 10;
+    while (height < my_window.gety() - 13) height += 10;
     
-    // Main loop
+    bool exit_flag = false;
+      
+    // Create a maze and a player
+    Maze m(width, height);
+    Player p;
+    int ch = 0;
+    // Go for it
     while (!exit_flag) {
-        // Create a maze and a player
-        Maze m(x_initial, y_initial);
-        Player p;
-        int ch = 0;
-        // Go for it
-        while (!exit_flag) {
-            m.Show(Color::green);
-            p.Show(Color::red);
-            p.ShowInfo(m, Color::white);
-            ch = getch();
-            switch(ch) {
-                case 'w': case KEY_UP:
-                    p.mov(m, 0, -1);
-                    break;
-                case 's': case KEY_DOWN:
-                    p.mov(m, 0, 1);
-                    break;
-                case 'a': case KEY_LEFT:
-                    p.mov(m, -1, 0);
-                    break;
-                case 'd': case KEY_RIGHT:
-                    p.mov(m, 1, 0);
-                    break;
-                case 'q': case KEY_EXIT: case 27:
-                    exit_flag = true;
-                    break;
-                default:
-                    refresh();
-            }
-            // Test if at exit and Win
-            if (p.getpos_y() == m.getheight()-1) {
-                move(0, 0);
-                clear();
-                refresh();
-                attron(COLOR_PAIR(Color::white));
-                printw("You WIN!!!!! Total moves: %i", p.getcounter());
-                getch();
-                attroff(COLOR_PAIR(Color::white));
+        m.Show(Color::green);
+        p.Show(Color::red);
+        p.ShowInfo(m, Color::white);
+        ch = getch();
+        switch(ch) {
+            case 'w': case KEY_UP:
+                p.mov(m, 0, -1);
                 break;
-            }
+            case 's': case KEY_DOWN:
+                p.mov(m, 0, 1);
+                break;
+            case 'a': case KEY_LEFT:
+                p.mov(m, -1, 0);
+                break;
+            case 'd': case KEY_RIGHT:
+                p.mov(m, 1, 0);
+                break;
+            case 'q': case KEY_EXIT: case 27:
+                exit_flag = true;
+                break;
+            default:
+                refresh();
         }
-        int row=0; int col=0;
-        getmaxyx(stdscr, row, col);
-        x_initial += 10; // Increase Maze Size
-        y_initial += 6;
-        if (row >= y_initial || col >= x_initial) { // Cant fit to screen, so exit
-            break;
+        // Test if at exit and Win
+        if (p.getpos_y() == m.getheight()-1) {
+            p.ShowWin(Color::white);
+            exit_flag = true;
         }
     }
     
