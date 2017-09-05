@@ -167,7 +167,8 @@ private:
 
 class Curses_window {
 public:
-    Curses_window() //default construct c-style things
+    Curses_window()   //default construct c-style things
+        : x{0}, y{0}    
     {
         initscr();
         if(has_colors() == FALSE) {
