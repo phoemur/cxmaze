@@ -203,8 +203,8 @@ int main()
     
     // Start sizes and increase conform screen
     int width = 23, height = 15;
-    while (width < (my_window.getx()/2)-11) width += 10;
-    while (height < my_window.gety() - 13) height += 10;
+    while (width < (my_window.getx()/2)-3) width += 2;
+    while (height < my_window.gety() - 4) height += 2;
     
     bool exit_flag = false;
       
