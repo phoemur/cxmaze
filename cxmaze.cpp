@@ -93,9 +93,9 @@ public:
     }
 
        
-    char* getmaze() const { return maze; }
-    size_type getwidth() const { return width; }
-    size_type getheight() const { return height; }
+    const char* getmaze() const noexcept { return maze; }
+    const size_type getwidth() const noexcept { return width; }
+    const size_type getheight() const noexcept { return height; }
     int myrand() { return dist(engine); } //random number generator [0:3]
     
 private:
@@ -155,9 +155,9 @@ public:
         ++counter;
     }
     
-    const size_type getpos_x() const { return x; }
-    const size_type getpos_y() const { return y; }
-    const size_type getcounter() const { return counter; }
+    const size_type getpos_x() const noexcept { return x; }
+    const size_type getpos_y() const noexcept { return y; }
+    const size_type getcounter() const noexcept { return counter; }
     
 private:
     size_type x;
@@ -191,8 +191,8 @@ public:
         endwin();     // destructor restore console at exit
     }
     
-    const int getx() const { return x; }
-    const int gety() const { return y; }
+    const int getx() const noexcept { return x; }
+    const int gety() const noexcept { return y; }
 private:
     int x;
     int y;  
